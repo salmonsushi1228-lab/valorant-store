@@ -63,6 +63,7 @@
             margin-top: 20px;
             font-size: 1.1rem;
             color: #aaaaaa;
+            word-break: break-all;
         }
 
         .section-title {
@@ -153,19 +154,18 @@
     </div>
 
     <script>
-        // 백엔드 Vercel API 주소
+        // Vercel 백엔드 API 주소
         const BACKEND_URL = "https://api-theta-eight-46.vercel.app/api/store";
 
-        // 로그인 버튼 클릭 이벤트: 라이엇 공식 인증 페이지로 이동
+        // 라이엇 로그인 버튼 클릭 시 공식 인증 URL로 리다이렉트
         document.getElementById("login-btn").addEventListener("click", () => {
-            // 현재 페이지 주소를 redirect_uri로 지정
             const currentUrl = window.location.origin + window.location.pathname;
             const riotAuthUrl = `https://auth.riotgames.com/authorize?client_id=play-valorant-web-prod&redirect_uri=${encodeURIComponent(currentUrl)}&response_type=token%20id_token&scope=openid%20account`;
             
             window.location.href = riotAuthUrl;
         });
 
-        // 페이지 로드 시 URL Hash 파싱 (라이엇 로그인 후 리다이렉트되어 돌아왔을 때)
+        // 페이지 진입 시 URL Hash 확인 (로그인 후 돌아왔을 때)
         window.addEventListener("DOMContentLoaded", () => {
             const hash = window.location.hash.substring(1);
             if (!hash) return;
@@ -174,20 +174,18 @@
             const accessToken = params.get("access_token");
 
             if (accessToken) {
-                // 로그인 해시 깔끔하게 제거 (주소창 정리)
+                // 주소창 Hash 제거
                 history.replaceState(null, null, window.location.pathname);
 
-                // UI 전환
                 document.getElementById("login-section").classList.add("hidden");
                 const statusEl = document.getElementById("status-section");
                 statusEl.classList.remove("hidden");
 
-                // 백엔드로 access_token 전달하여 상점 정보 요청
                 fetchStoreData(accessToken);
             }
         });
 
-        // 백엔드 API 호출 함수
+        // 백엔드로 access_token 전송
         async function fetchStoreData(accessToken) {
             const statusEl = document.getElementById("status-section");
 
@@ -206,7 +204,9 @@
                 const data = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(data.detail || "상점 조회 실패");
+                    // [object Object] 방지를 위해 detail이 객체/문자열인지 확인하여 문자열 처리
+                    const errDetail = typeof data.detail === "object" ? JSON.stringify(data.detail) : (data.detail || "상점 조회에 실패했습니다.");
+                    throw new Error(errDetail);
                 }
 
                 statusEl.classList.add("hidden");
@@ -218,18 +218,16 @@
             }
         }
 
-        // 스킨 카드 렌더링 함수
+        // 스킨 렌더링
         function renderStore(data) {
             document.getElementById("store-section").classList.remove("hidden");
 
-            // 1. 일일상점
             const dailyGrid = document.getElementById("daily-grid");
             dailyGrid.innerHTML = "";
             (data.daily_store || []).forEach(skin => {
                 dailyGrid.appendChild(createSkinCard(skin));
             });
 
-            // 2. 야시장
             if (data.night_market && data.night_market.length > 0) {
                 const nightWrapper = document.getElementById("night-market-wrapper");
                 const nightGrid = document.getElementById("night-grid");
@@ -242,7 +240,6 @@
             }
         }
 
-        // 스킨 엘리먼트 생성
         function createSkinCard(skin) {
             const card = document.createElement("div");
             card.className = "card";
@@ -255,7 +252,7 @@
             card.innerHTML = `
                 ${discountHtml}
                 <img src="${skin.icon || ''}" alt="${skin.name}" loading="lazy">
-                <div class="card-name">${skin.name || '알 수 없는 스킨'}</div>
+                <div class="card-name">${skin.name || '스킨 정보 없음'}</div>
             `;
             return card;
         }
