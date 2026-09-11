@@ -160,7 +160,7 @@
         // 라이엇 로그인 버튼 클릭 시 공식 인증 URL로 리다이렉트
         document.getElementById("login-btn").addEventListener("click", () => {
             const currentUrl = window.location.origin + window.location.pathname;
-            const riotAuthUrl = `https://auth.riotgames.com/authorize?client_id=play-valorant-web-prod&redirect_uri=${encodeURIComponent(currentUrl)}&response_type=token%20id_token&scope=openid%20account`;
+            const riotAuthUrl = `https://auth.riotgames.com/authorize?client_id=play-valorant-web-prod&redirect_uri=${encodeURIComponent(currentUrl)}&response_type=token%20id_token&scope=openid%20account&nonce=1`;
             
             window.location.href = riotAuthUrl;
         });
