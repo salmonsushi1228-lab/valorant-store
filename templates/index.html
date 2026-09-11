@@ -40,23 +40,61 @@
             text-align: center;
         }
 
-        .btn-login {
+        .step-box {
+            background-color: #2b2f33;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: left;
+            border-left: 4px solid #ff4655;
+        }
+
+        .step-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .step-desc {
+            font-size: 0.9rem;
+            color: #aaaaaa;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .btn-action {
             background-color: #ff4655;
             color: #ffffff;
             border: none;
-            padding: 14px 28px;
-            font-size: 1.1rem;
+            padding: 12px 24px;
+            font-size: 1rem;
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
             transition: background 0.2s ease-in-out;
             text-decoration: none;
             display: inline-block;
-            margin-top: 10px;
         }
 
-        .btn-login:hover {
+        .btn-action:hover {
             background-color: #e03e4d;
+        }
+
+        .input-text {
+            width: 100%;
+            padding: 12px;
+            background-color: #15191c;
+            border: 1px solid #3d4246;
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+        }
+
+        .input-text:focus {
+            outline: none;
+            border-color: #ff4655;
         }
 
         .status-msg {
@@ -130,18 +168,28 @@
     <h1>VALORANT STORE</h1>
 
     <div class="container">
-        <!-- 로그인 버튼 영역 -->
+        <!-- 로그인 가이드 및 토큰 입력 영역 -->
         <div id="login-section">
-            <p style="margin-bottom: 15px; color: #ccc;">라이엇 공식 로그인 페이지로 이동하여 안전하게 로그인합니다.</p>
-            <button class="btn-login" id="login-btn">라이엇 계정으로 로그인</button>
+            <div class="step-box">
+                <div class="step-title">1단계: 라이엇 공식 홈페이지 로그인</div>
+                <div class="step-desc">아래 버튼을 눌러 새 창에서 라이엇 로그인을 진행해 주세요. 로그인 성공 후 이동된 페이지의 주소창 전체를 복사합니다.</div>
+                <button class="btn-action" id="login-btn">라이엇 로그인 창 열기</button>
+            </div>
+
+            <div class="step-box">
+                <div class="step-title">2단계: 로그인 후 이동된 URL 입력</div>
+                <div class="step-desc">로그인 후 이동한 주소창의 전체 URL(또는 access_token)을 아래에 붙여넣어 주세요.</div>
+                <input type="text" id="token-input" class="input-text" placeholder="https://playvalorant.com/opt_in#access_token=..." />
+                <button class="btn-action" id="submit-btn" style="width: 100%;">상점 조회하기</button>
+            </div>
         </div>
 
-        <!-- 로딩 및 상태 안내 -->
+        <!-- 상태 안내 -->
         <div id="status-section" class="status-msg hidden">
             상점 데이터를 불러오는 중입니다...
         </div>
 
-        <!-- 상점 결과 출력 영역 -->
+        <!-- 결과 영역 -->
         <div id="store-section" class="hidden">
             <h2 class="section-title">일일 상점 (Daily Store)</h2>
             <div id="daily-grid" class="grid-container"></div>
@@ -154,38 +202,42 @@
     </div>
 
     <script>
-        // Vercel 백엔드 API 주소
         const BACKEND_URL = "https://api-theta-eight-46.vercel.app/api/store";
 
-        // 라이엇 로그인 버튼 클릭 시 공식 인증 URL로 리다이렉트
+        // 1단계: 라이엇 공식 인증 등록 URI 사용
         document.getElementById("login-btn").addEventListener("click", () => {
-            const currentUrl = window.location.origin + window.location.pathname;
-            const riotAuthUrl = `https://auth.riotgames.com/authorize?client_id=play-valorant-web-prod&redirect_uri=${encodeURIComponent(currentUrl)}&response_type=token%20id_token&scope=openid%20account&nonce=1`;
-            
-            window.location.href = riotAuthUrl;
+            const registeredRedirectUri = "https://playvalorant.com/opt_in";
+            const riotAuthUrl = `https://auth.riotgames.com/authorize?client_id=play-valorant-web-prod&redirect_uri=${encodeURIComponent(registeredRedirectUri)}&response_type=token%20id_token&scope=openid%20account&nonce=1`;
+            window.open(riotAuthUrl, "_blank");
         });
 
-        // 페이지 진입 시 URL Hash 확인 (로그인 후 돌아왔을 때)
-        window.addEventListener("DOMContentLoaded", () => {
-            const hash = window.location.hash.substring(1);
-            if (!hash) return;
-
-            const params = new URLSearchParams(hash);
-            const accessToken = params.get("access_token");
-
-            if (accessToken) {
-                // 주소창 Hash 제거
-                history.replaceState(null, null, window.location.pathname);
-
-                document.getElementById("login-section").classList.add("hidden");
-                const statusEl = document.getElementById("status-section");
-                statusEl.classList.remove("hidden");
-
-                fetchStoreData(accessToken);
+        // 2단계: URL 붙여넣기 후 조회
+        document.getElementById("submit-btn").addEventListener("click", () => {
+            const inputVal = document.getElementById("token-input").value.trim();
+            if (!inputVal) {
+                alert("URL 또는 Access Token을 입력해 주세요.");
+                return;
             }
+
+            let accessToken = inputVal;
+
+            // URL 전체를 붙여넣었을 경우 access_token 파싱
+            if (inputVal.includes("access_token=")) {
+                const matches = inputVal.match(/access_token=([^&]+)/);
+                if (matches && matches[1]) {
+                    accessToken = matches[1];
+                }
+            }
+
+            document.getElementById("login-section").classList.add("hidden");
+            const statusEl = document.getElementById("status-section");
+            statusEl.innerText = "상점 데이터를 불러오는 중입니다...";
+            statusEl.style.color = "#aaaaaa";
+            statusEl.classList.remove("hidden");
+
+            fetchStoreData(accessToken);
         });
 
-        // 백엔드로 access_token 전송
         async function fetchStoreData(accessToken) {
             const statusEl = document.getElementById("status-section");
 
@@ -204,8 +256,7 @@
                 const data = await response.json();
 
                 if (!response.ok) {
-                    // [object Object] 방지를 위해 detail이 객체/문자열인지 확인하여 문자열 처리
-                    const errDetail = typeof data.detail === "object" ? JSON.stringify(data.detail) : (data.detail || "상점 조회에 실패했습니다.");
+                    const errDetail = typeof data.detail === "object" ? JSON.stringify(data.detail) : (data.detail || "상점 조회 실패");
                     throw new Error(errDetail);
                 }
 
@@ -218,7 +269,6 @@
             }
         }
 
-        // 스킨 렌더링
         function renderStore(data) {
             document.getElementById("store-section").classList.remove("hidden");
 
