@@ -206,9 +206,9 @@
 </div>
 
 <script>
-    // ⚠️ 본인의 실제 Vercel 배포 URL로 변경해 주거나 상대경로 '/api/store'를 사용하세요.
-    // 예: 'https://your-project.vercel.app/api/store'
-    const VERCEL_API_URL = 'https://api-theta-eight-46.vercel.app/api/store';
+    // ⚠️ 별도로 배포한 백엔드 API 서버의 URL 주소를 입력하세요.
+    // 예: "https://your-backend-api.vercel.app/api/store" 또는 "https://your-backend-api.vercel.app/store"
+    const API_SERVER_URL = "https://api-theta-eight-46.vercel.app/api/store";
 
     async function fetchStoreData() {
         const usernameInput = document.getElementById('username').value;
@@ -220,7 +220,7 @@
         const resultsDiv = document.getElementById('results');
         const submitBtn = document.getElementById('submit-btn');
 
-        // 초기화
+        // UI 초기화
         errorDiv.style.display = 'none';
         resultsDiv.style.display = 'none';
         
@@ -234,7 +234,7 @@
         submitBtn.disabled = true;
 
         try {
-            const response = await fetch(VERCEL_API_URL, {
+            const response = await fetch(API_SERVER_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json; charset=utf-8'
@@ -246,10 +246,10 @@
                 })
             });
 
-            // 응답이 JSON 타입이 아닌 HTML 페이지일 경우 예외 처리
+            // 응답이 JSON 형식이 아닐 때의 예외 처리
             const contentType = response.headers.get("content-type");
             if (!contentType || !contentType.includes("application/json")) {
-                throw new Error("서버에서 API 응답(JSON) 대신 HTML 페이지를 반환했습니다. vercel.json 라우팅 경로 또는 VERCEL_API_URL 주소를 확인하세요.");
+                throw new Error("서버에서 올바른 API 응답(JSON)을 받지 못했습니다. API_SERVER_URL 주소를 확인하세요.");
             }
 
             const data = await response.json();
@@ -258,7 +258,7 @@
                 throw new Error(data.detail || '상점 정보를 가져오는데 실패했습니다.');
             }
 
-            // 일일상점 렌더링
+            // 일일상점 카드 생성
             const dailyGrid = document.getElementById('daily-grid');
             dailyGrid.innerHTML = '';
             data.daily_store.forEach(skin => {
@@ -271,7 +271,7 @@
                 dailyGrid.appendChild(card);
             });
 
-            // 야시장 렌더링
+            // 야시장 카드 생성
             const nightSection = document.getElementById('night-market-section');
             const nightGrid = document.getElementById('night-grid');
             nightGrid.innerHTML = '';
