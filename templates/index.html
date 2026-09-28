@@ -64,9 +64,9 @@
           <p class="notice"><span>◇</span><span><strong>개인정보 안내.</strong> 입력값은 이 조회 요청에만 사용되며 브라우저에 저장하지 않습니다.</span></p>
         </div>
         <aside class="panel guide"><p class="section-kicker">HOW IT WORKS</p><h2>3단계로 간단하게</h2><div class="steps">
-          <div class="step"><span class="num">01</span><div><h3>라이엇 공식 로그인으로 이동</h3><p>계정 정보는 Riot Games 공식 페이지에서만 입력합니다. <a id="login-link" href="#">공식 로그인 계속하기 ↗</a></p></div></div>
-          <div class="step"><span class="num">02</span><div><h3>리디렉션된 주소 복사</h3><p>로그인 완료 후 주소창의 전체 URL을 복사합니다.</p></div></div>
-          <div class="step"><span class="num">03</span><div><h3>붙여넣고 조회</h3><p>왼쪽 입력창에 붙여넣으면 오늘의 스킨 목록을 확인할 수 있습니다.</p></div></div>
+          <div class="step"><span class="num">01</span><div><h3>라이엇으로 로그인</h3><p>공식 Riot 로그인으로 안전하게 이동합니다. <a id="login-link" href="/auth/login">공식 로그인 계속하기 ↗</a></p></div></div>
+          <div class="step"><span class="num">02</span><div><h3>자동으로 사이트 복귀</h3><p>로그인을 마치면 이 사이트로 자동으로 돌아옵니다.</p></div></div>
+          <div class="step"><span class="num">03</span><div><h3>내 상점 확인</h3><p>인증된 토큰으로 오늘의 스킨 목록을 자동 조회합니다.</p></div></div>
         </div></aside>
       </section>
 
@@ -81,8 +81,6 @@
   <script>
     const BACKEND_URL = "https://api-theta-eight-46.vercel.app/api/store";
     const input = document.getElementById("token-input"), status = document.getElementById("status"), submit = document.getElementById("submit-btn"), results = document.getElementById("results");
-    function riotAuthUrl() { const redirect = "https://playvalorant.com/opt_in"; return `https://auth.riotgames.com/authorize?client_id=play-valorant-web-prod&redirect_uri=${encodeURIComponent(redirect)}&response_type=token%20id_token&scope=openid%20account&nonce=${crypto.getRandomValues(new Uint32Array(1))[0]}`; }
-    document.getElementById("login-link").addEventListener("click", (event) => { event.preventDefault(); window.location.assign(riotAuthUrl()); });
     document.getElementById("reset-btn").addEventListener("click", () => { input.value = ""; status.textContent = ""; status.className = "status"; results.classList.remove("show"); input.focus(); });
     submit.addEventListener("click", lookupStore); input.addEventListener("keydown", (event) => { if (event.key === "Enter") lookupStore(); });
     function tokenFrom(value) { const match = value.match(/[?#&]access_token=([^&]+)/); return match ? decodeURIComponent(match[1]) : value; }
@@ -97,6 +95,10 @@
     }
     function renderStore(data) { renderCards(document.getElementById("daily-grid"), data.daily_store); const night = Array.isArray(data.night_market) && data.night_market.length; document.getElementById("night-section").hidden = !night; if (night) renderCards(document.getElementById("night-grid"), data.night_market); document.getElementById("updated-at").textContent = `조회 시간 · ${new Intl.DateTimeFormat("ko-KR", {hour:"2-digit", minute:"2-digit"}).format(new Date())}`; results.classList.add("show"); results.scrollIntoView({behavior:"smooth", block:"start"}); }
     function renderCards(container, skins) { container.replaceChildren(); if (!Array.isArray(skins) || !skins.length) { const empty = document.createElement("p"); empty.className = "empty"; empty.textContent = "표시할 스킨 정보를 찾지 못했습니다."; container.append(empty); return; } skins.forEach((skin) => { const card = document.createElement("article"); card.className = "skin"; if (skin.discountPercent) { const discount = document.createElement("span"); discount.className = "discount"; discount.textContent = `-${skin.discountPercent}%`; card.append(discount); } const image = document.createElement("img"); image.src = skin.icon || ""; image.alt = skin.name || "발로란트 스킨"; image.loading = "lazy"; const name = document.createElement("div"); name.className = "skin-name"; name.textContent = skin.name || "스킨 정보 없음"; card.append(image, name); if (skin.price) { const price = document.createElement("div"); price.className = "price"; const icon = document.createElement("span"); icon.className = "vp"; price.append(icon, document.createTextNode(`${Number(skin.price).toLocaleString("ko-KR")} VP`)); card.append(price); } container.append(card); }); }
+    const authError = new URLSearchParams(window.location.search).get("auth_error");
+    const oauthToken = tokenFrom(window.location.hash);
+    if (authError) { setStatus(authError, "error"); history.replaceState({}, document.title, window.location.pathname); }
+    if (oauthToken && window.location.hash.includes("access_token=")) { input.value = oauthToken; history.replaceState({}, document.title, window.location.pathname); lookupStore(); }
   </script>
 </body>
 </html>
