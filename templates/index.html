@@ -1,311 +1,104 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VALORANT STORE</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
-        }
-
-        body {
-            background-color: #0f1923;
-            color: #ece8e1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 40px 20px;
-        }
-
-        h1 {
-            color: #ff4655;
-            margin-bottom: 20px;
-            font-size: 2.2rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 900px;
-            background-color: #1f2326;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-            text-align: center;
-        }
-
-        .step-box {
-            background-color: #2b2f33;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: left;
-            border-left: 4px solid #ff4655;
-        }
-
-        .step-title {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #ffffff;
-            margin-bottom: 8px;
-        }
-
-        .step-desc {
-            font-size: 0.9rem;
-            color: #aaaaaa;
-            margin-bottom: 12px;
-            line-height: 1.4;
-        }
-
-        .btn-action {
-            background-color: #ff4655;
-            color: #ffffff;
-            border: none;
-            padding: 12px 24px;
-            font-size: 1rem;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.2s ease-in-out;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-action:hover {
-            background-color: #e03e4d;
-        }
-
-        .input-text {
-            width: 100%;
-            padding: 12px;
-            background-color: #15191c;
-            border: 1px solid #3d4246;
-            border-radius: 6px;
-            color: #ffffff;
-            font-size: 0.95rem;
-            margin-bottom: 12px;
-        }
-
-        .input-text:focus {
-            outline: none;
-            border-color: #ff4655;
-        }
-
-        .status-msg {
-            margin-top: 20px;
-            font-size: 1.1rem;
-            color: #aaaaaa;
-            word-break: break-all;
-        }
-
-        .section-title {
-            text-align: left;
-            font-size: 1.5rem;
-            color: #ff4655;
-            margin: 30px 0 15px 0;
-            border-bottom: 2px solid #333;
-            padding-bottom: 8px;
-        }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 16px;
-        }
-
-        .card {
-            background-color: #2b2f33;
-            border-radius: 8px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            border: 1px solid #3d4246;
-            position: relative;
-        }
-
-        .card img {
-            width: 100%;
-            height: 100px;
-            object-fit: contain;
-            margin: 10px 0;
-        }
-
-        .card-name {
-            font-size: 0.95rem;
-            font-weight: 600;
-            text-align: center;
-            color: #ffffff;
-        }
-
-        .discount-badge {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background-color: #000;
-            color: #17e8a4;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            border: 1px solid #17e8a4;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f1923">
+  <title>V-SHOP | VALORANT 상점 조회</title>
+  <style>
+    :root { --bg:#0f1923; --panel:#17212c; --panel-2:#202d3b; --line:rgba(236,232,225,.13); --text:#ece8e1; --muted:#9ca8b8; --red:#ff4655; --aqua:#72efdd; --shadow:0 24px 70px rgba(0,0,0,.28); }
+    * { box-sizing:border-box; }
+    body { min-width:320px; margin:0; color:var(--text); background:radial-gradient(circle at 90% 5%, rgba(255,70,85,.18), transparent 25rem), radial-gradient(circle at 5% 80%, rgba(114,239,221,.1), transparent 23rem), var(--bg); font-family:Inter, Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    button, input { font:inherit; } button { cursor:pointer; }
+    .shell { width:min(1120px, calc(100% - 40px)); margin:auto; }
+    header { display:flex; align-items:center; justify-content:space-between; padding:26px 0; }
+    .brand { display:flex; gap:11px; align-items:center; font-weight:800; letter-spacing:.08em; }
+    .brand-mark { display:grid; width:30px; height:30px; place-items:center; color:#fff; background:var(--red); clip-path:polygon(0 0,100% 0,75% 100%,25% 100%); font-size:11px; }
+    .tag { padding:7px 10px; border:1px solid var(--line); border-radius:99px; color:var(--muted); font-size:12px; }
+    main { padding:50px 0 58px; }
+    .eyebrow { display:flex; align-items:center; gap:8px; color:var(--aqua); font-size:12px; font-weight:800; letter-spacing:.12em; }
+    .eyebrow::before { width:7px; height:7px; border-radius:50%; background:var(--aqua); content:""; box-shadow:0 0 14px var(--aqua); }
+    h1 { max-width:700px; margin:15px 0 14px; font-size:clamp(40px, 7vw, 76px); line-height:.98; letter-spacing:-.065em; }
+    h1 em { color:var(--red); font-style:normal; }
+    .lead { max-width:580px; margin:0; color:var(--muted); line-height:1.7; }
+    .lookup { display:grid; grid-template-columns:1.08fr .92fr; gap:20px; margin-top:48px; }
+    .panel { border:1px solid var(--line); background:linear-gradient(140deg, rgba(32,45,59,.95), rgba(23,33,44,.92)); box-shadow:var(--shadow); }
+    .form-panel { padding:clamp(24px,4vw,40px); }
+    .section-kicker { margin:0 0 8px; color:var(--aqua); font-size:12px; font-weight:800; letter-spacing:.11em; }
+    h2 { margin:0; font-size:25px; letter-spacing:-.04em; } .intro { margin:9px 0 25px; color:var(--muted); font-size:14px; line-height:1.6; }
+    label { display:block; margin-bottom:8px; font-size:13px; font-weight:700; }
+    .token-input { width:100%; padding:15px 16px; border:1px solid var(--line); border-radius:3px; outline:none; background:#101923; color:var(--text); transition:border .2s, box-shadow .2s; }
+    .token-input:focus { border-color:var(--red); box-shadow:0 0 0 3px rgba(255,70,85,.16); }
+    .controls { display:flex; gap:10px; margin-top:12px; }
+    .button { min-height:47px; border:0; padding:0 18px; font-weight:800; letter-spacing:.01em; transition:transform .16s, filter .16s; }
+    .button:hover { transform:translateY(-1px); filter:brightness(1.08); } .button:disabled { cursor:not-allowed; opacity:.65; transform:none; }
+    .button.primary { flex:1; color:#fff; background:var(--red); } .button.ghost { color:var(--text); background:transparent; border:1px solid var(--line); }
+    .notice { display:flex; gap:9px; margin:18px 0 0; color:var(--muted); font-size:12px; line-height:1.55; }.notice strong { color:var(--text); }
+    .guide { padding:clamp(24px,4vw,40px); position:relative; overflow:hidden; }.guide::after { position:absolute; right:-80px; bottom:-115px; width:250px; height:250px; border:1px solid rgba(114,239,221,.2); border-radius:50%; content:""; }
+    .steps { display:grid; gap:19px; margin-top:28px; }.step { display:grid; grid-template-columns:30px 1fr; gap:13px; }.num { display:grid; place-items:center; width:28px; height:28px; border:1px solid rgba(114,239,221,.55); color:var(--aqua); font-size:12px; font-weight:800; }.step h3 { margin:2px 0 5px; font-size:14px; }.step p { margin:0; color:var(--muted); font-size:13px; line-height:1.55; }.step a { color:var(--aqua); }
+    .status { min-height:24px; margin:15px 0 0; color:var(--muted); font-size:13px; }.status.error { color:#ff8f98; }.status.success { color:var(--aqua); }
+    .results { display:none; margin-top:34px; }.results.show { display:block; animation:rise .35s ease both; }.result-head { display:flex; align-items:end; justify-content:space-between; gap:18px; margin-bottom:15px; }.result-head h2 { font-size:29px; }.timestamp { color:var(--muted); font-size:12px; text-align:right; }
+    .cards { display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; }.skin { position:relative; min-height:234px; padding:13px; border:1px solid var(--line); background:linear-gradient(145deg, #273544, #1a2531); overflow:hidden; }.skin::before { position:absolute; inset:auto -30px -58px auto; width:130px; height:130px; background:rgba(255,70,85,.09); transform:rotate(35deg); content:""; }.skin img { position:relative; z-index:1; display:block; width:100%; height:142px; object-fit:contain; }.skin-name { position:relative; z-index:1; margin-top:8px; font-size:14px; font-weight:800; line-height:1.35; }.price { position:relative; z-index:1; display:flex; gap:5px; align-items:center; margin-top:7px; color:var(--aqua); font-size:13px; font-weight:800; }.vp { width:10px; height:10px; background:var(--aqua); clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%); }.discount { position:absolute; z-index:2; top:10px; right:10px; padding:4px 6px; background:var(--red); color:#fff; font-size:11px; font-weight:800; }.night { margin-top:30px; }.night h2 { color:var(--aqua); font-size:22px; margin-bottom:15px; }
+    .empty { grid-column:1/-1; padding:34px; border:1px dashed var(--line); color:var(--muted); text-align:center; }
+    footer { display:flex; justify-content:space-between; gap:15px; padding:23px 0 32px; border-top:1px solid var(--line); color:var(--muted); font-size:11px; line-height:1.5; }.riot { max-width:570px; }
+    @keyframes rise { from { opacity:0; transform:translateY(9px); } to { opacity:1; transform:none; } }
+    @media (max-width:760px) { .shell { width:min(100% - 28px, 1120px); } header { padding-top:18px; } main { padding-top:30px; }.lookup { grid-template-columns:1fr; margin-top:32px; }.cards { grid-template-columns:repeat(2, 1fr); }.skin { min-height:214px; }.skin img { height:122px; } footer { flex-direction:column; } }
+  </style>
 </head>
 <body>
+  <div class="shell">
+    <header><div class="brand"><span class="brand-mark">V</span> V-SHOP</div><span class="tag">KR · DAILY STORE</span></header>
+    <main>
+      <div class="eyebrow">PERSONAL STORE VIEWER</div>
+      <h1>오늘의 <em>발로란트</em><br>상점을 확인하세요.</h1>
+      <p class="lead">로그인 리디렉션 URL 또는 액세스 토큰으로 내 일일 상점과 야시장 정보를 불러옵니다.</p>
 
-    <h1>VALORANT STORE</h1>
-
-    <div class="container">
-        <!-- 로그인 가이드 및 토큰 입력 영역 -->
-        <div id="login-section">
-            <div class="step-box">
-                <div class="step-title">1단계: 라이엇 공식 홈페이지 로그인</div>
-                <div class="step-desc">아래 버튼을 눌러 새 창에서 라이엇 로그인을 진행해 주세요. 로그인 성공 후 이동된 페이지의 주소창 전체를 복사합니다.</div>
-                <button class="btn-action" id="login-btn">라이엇 로그인 창 열기</button>
-            </div>
-
-            <div class="step-box">
-                <div class="step-title">2단계: 로그인 후 이동된 URL 입력</div>
-                <div class="step-desc">로그인 후 이동한 주소창의 전체 URL(또는 access_token)을 아래에 붙여넣어 주세요.</div>
-                <input type="text" id="token-input" class="input-text" placeholder="https://playvalorant.com/opt_in#access_token=..." />
-                <button class="btn-action" id="submit-btn" style="width: 100%;">상점 조회하기</button>
-            </div>
+      <section class="lookup" aria-label="상점 조회">
+        <div class="panel form-panel">
+          <p class="section-kicker">STORE LOOKUP</p><h2>상점 조회</h2>
+          <p class="intro">로그인 뒤 받은 전체 URL을 그대로 붙여넣거나 access token을 입력하세요.</p>
+          <label for="token-input">로그인 리디렉션 URL / Access Token</label>
+          <input id="token-input" class="token-input" type="text" autocomplete="off" spellcheck="false" placeholder="https://playvalorant.com/opt_in#access_token=...">
+          <div class="controls"><button id="submit-btn" class="button primary" type="button">내 상점 불러오기</button><button id="reset-btn" class="button ghost" type="button">초기화</button></div>
+          <p id="status" class="status" role="status" aria-live="polite"></p>
+          <p class="notice"><span>◇</span><span><strong>개인정보 안내.</strong> 입력값은 이 조회 요청에만 사용되며 브라우저에 저장하지 않습니다.</span></p>
         </div>
+        <aside class="panel guide"><p class="section-kicker">HOW IT WORKS</p><h2>3단계로 간단하게</h2><div class="steps">
+          <div class="step"><span class="num">01</span><div><h3>라이엇으로 로그인</h3><p>공식 Riot 로그인으로 안전하게 이동합니다. <a id="login-link" href="/auth/login">공식 로그인 계속하기 ↗</a></p></div></div>
+          <div class="step"><span class="num">02</span><div><h3>자동으로 사이트 복귀</h3><p>로그인을 마치면 이 사이트로 자동으로 돌아옵니다.</p></div></div>
+          <div class="step"><span class="num">03</span><div><h3>내 상점 확인</h3><p>인증된 토큰으로 오늘의 스킨 목록을 자동 조회합니다.</p></div></div>
+        </div></aside>
+      </section>
 
-        <!-- 상태 안내 -->
-        <div id="status-section" class="status-msg hidden">
-            상점 데이터를 불러오는 중입니다...
-        </div>
-
-        <!-- 결과 영역 -->
-        <div id="store-section" class="hidden">
-            <h2 class="section-title">일일 상점 (Daily Store)</h2>
-            <div id="daily-grid" class="grid-container"></div>
-
-            <div id="night-market-wrapper" class="hidden">
-                <h2 class="section-title" style="color: #17e8a4;">야시장 (Night Market)</h2>
-                <div id="night-grid" class="grid-container"></div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const BACKEND_URL = "https://api-theta-eight-46.vercel.app/api/store";
-
-        // 1단계: 라이엇 공식 인증 등록 URI 사용
-        document.getElementById("login-btn").addEventListener("click", () => {
-            const registeredRedirectUri = "https://playvalorant.com/opt_in";
-            const riotAuthUrl = `https://auth.riotgames.com/authorize?client_id=play-valorant-web-prod&redirect_uri=${encodeURIComponent(registeredRedirectUri)}&response_type=token%20id_token&scope=openid%20account&nonce=1`;
-            window.open(riotAuthUrl, "_blank");
-        });
-
-        // 2단계: URL 붙여넣기 후 조회
-        document.getElementById("submit-btn").addEventListener("click", () => {
-            const inputVal = document.getElementById("token-input").value.trim();
-            if (!inputVal) {
-                alert("URL 또는 Access Token을 입력해 주세요.");
-                return;
-            }
-
-            let accessToken = inputVal;
-
-            // URL 전체를 붙여넣었을 경우 access_token 파싱
-            if (inputVal.includes("access_token=")) {
-                const matches = inputVal.match(/access_token=([^&]+)/);
-                if (matches && matches[1]) {
-                    accessToken = matches[1];
-                }
-            }
-
-            document.getElementById("login-section").classList.add("hidden");
-            const statusEl = document.getElementById("status-section");
-            statusEl.innerText = "상점 데이터를 불러오는 중입니다...";
-            statusEl.style.color = "#aaaaaa";
-            statusEl.classList.remove("hidden");
-
-            fetchStoreData(accessToken);
-        });
-
-        async function fetchStoreData(accessToken) {
-            const statusEl = document.getElementById("status-section");
-
-            try {
-                const response = await fetch(BACKEND_URL, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        access_token: accessToken,
-                        region: "kr"
-                    })
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    const errDetail = typeof data.detail === "object" ? JSON.stringify(data.detail) : (data.detail || "상점 조회 실패");
-                    throw new Error(errDetail);
-                }
-
-                statusEl.classList.add("hidden");
-                renderStore(data);
-
-            } catch (err) {
-                statusEl.innerText = `오류 발생: ${err.message}`;
-                statusEl.style.color = "#ff4655";
-            }
-        }
-
-        function renderStore(data) {
-            document.getElementById("store-section").classList.remove("hidden");
-
-            const dailyGrid = document.getElementById("daily-grid");
-            dailyGrid.innerHTML = "";
-            (data.daily_store || []).forEach(skin => {
-                dailyGrid.appendChild(createSkinCard(skin));
-            });
-
-            if (data.night_market && data.night_market.length > 0) {
-                const nightWrapper = document.getElementById("night-market-wrapper");
-                const nightGrid = document.getElementById("night-grid");
-                nightGrid.innerHTML = "";
-                
-                nightWrapper.classList.remove("hidden");
-                data.night_market.forEach(skin => {
-                    nightGrid.appendChild(createSkinCard(skin));
-                });
-            }
-        }
-
-        function createSkinCard(skin) {
-            const card = document.createElement("div");
-            card.className = "card";
-
-            let discountHtml = "";
-            if (skin.discountPercent) {
-                discountHtml = `<div class="discount-badge">-${skin.discountPercent}%</div>`;
-            }
-
-            card.innerHTML = `
-                ${discountHtml}
-                <img src="${skin.icon || ''}" alt="${skin.name}" loading="lazy">
-                <div class="card-name">${skin.name || '스킨 정보 없음'}</div>
-            `;
-            return card;
-        }
-    </script>
+      <section id="results" class="results" aria-live="polite">
+        <div class="result-head"><div><p class="section-kicker">YOUR ROTATION</p><h2>일일 상점</h2></div><p id="updated-at" class="timestamp"></p></div>
+        <div id="daily-grid" class="cards"></div>
+        <div id="night-section" class="night" hidden><h2>야시장</h2><div id="night-grid" class="cards"></div></div>
+      </section>
+    </main>
+    <footer><span>V-SHOP · 개인 상점 조회 도구</span><span class="riot">VALORANT 및 Riot Games는 Riot Games, Inc.의 상표입니다. 이 프로젝트는 Riot Games와 제휴하거나 보증받지 않았습니다.</span></footer>
+  </div>
+  <script>
+    const BACKEND_URL = "https://api-theta-eight-46.vercel.app/api/store";
+    const input = document.getElementById("token-input"), status = document.getElementById("status"), submit = document.getElementById("submit-btn"), results = document.getElementById("results");
+    document.getElementById("reset-btn").addEventListener("click", () => { input.value = ""; status.textContent = ""; status.className = "status"; results.classList.remove("show"); input.focus(); });
+    submit.addEventListener("click", lookupStore); input.addEventListener("keydown", (event) => { if (event.key === "Enter") lookupStore(); });
+    function tokenFrom(value) { const match = value.match(/[?#&]access_token=([^&]+)/); return match ? decodeURIComponent(match[1]) : value; }
+    function setStatus(message, kind = "") { status.textContent = message; status.className = `status ${kind}`; }
+    async function lookupStore() {
+      const accessToken = tokenFrom(input.value.trim());
+      if (!accessToken) { setStatus("리디렉션 URL 또는 Access Token을 입력해 주세요.", "error"); input.focus(); return; }
+      submit.disabled = true; submit.textContent = "불러오는 중…"; setStatus("개인 상점 정보를 안전하게 불러오는 중입니다."); results.classList.remove("show");
+      try { const response = await fetch(BACKEND_URL, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({access_token:accessToken, region:"kr"}) }); const data = await response.json(); if (!response.ok) throw new Error(typeof data.detail === "string" ? data.detail : "상점 조회에 실패했습니다."); renderStore(data); setStatus("상점 정보를 성공적으로 불러왔습니다.", "success"); }
+      catch (error) { setStatus(`조회 오류: ${error.message}`, "error"); }
+      finally { submit.disabled = false; submit.textContent = "내 상점 불러오기"; }
+    }
+    function renderStore(data) { renderCards(document.getElementById("daily-grid"), data.daily_store); const night = Array.isArray(data.night_market) && data.night_market.length; document.getElementById("night-section").hidden = !night; if (night) renderCards(document.getElementById("night-grid"), data.night_market); document.getElementById("updated-at").textContent = `조회 시간 · ${new Intl.DateTimeFormat("ko-KR", {hour:"2-digit", minute:"2-digit"}).format(new Date())}`; results.classList.add("show"); results.scrollIntoView({behavior:"smooth", block:"start"}); }
+    function renderCards(container, skins) { container.replaceChildren(); if (!Array.isArray(skins) || !skins.length) { const empty = document.createElement("p"); empty.className = "empty"; empty.textContent = "표시할 스킨 정보를 찾지 못했습니다."; container.append(empty); return; } skins.forEach((skin) => { const card = document.createElement("article"); card.className = "skin"; if (skin.discountPercent) { const discount = document.createElement("span"); discount.className = "discount"; discount.textContent = `-${skin.discountPercent}%`; card.append(discount); } const image = document.createElement("img"); image.src = skin.icon || ""; image.alt = skin.name || "발로란트 스킨"; image.loading = "lazy"; const name = document.createElement("div"); name.className = "skin-name"; name.textContent = skin.name || "스킨 정보 없음"; card.append(image, name); if (skin.price) { const price = document.createElement("div"); price.className = "price"; const icon = document.createElement("span"); icon.className = "vp"; price.append(icon, document.createTextNode(`${Number(skin.price).toLocaleString("ko-KR")} VP`)); card.append(price); } container.append(card); }); }
+    const authError = new URLSearchParams(window.location.search).get("auth_error");
+    const oauthToken = tokenFrom(window.location.hash);
+    if (authError) { setStatus(authError, "error"); history.replaceState({}, document.title, window.location.pathname); }
+    if (oauthToken && window.location.hash.includes("access_token=")) { input.value = oauthToken; history.replaceState({}, document.title, window.location.pathname); lookupStore(); }
+  </script>
 </body>
 </html>
