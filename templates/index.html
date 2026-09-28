@@ -41,6 +41,7 @@
     .cards { display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; }.skin { position:relative; min-height:234px; padding:13px; border:1px solid var(--line); background:linear-gradient(145deg, #273544, #1a2531); overflow:hidden; }.skin::before { position:absolute; inset:auto -30px -58px auto; width:130px; height:130px; background:rgba(255,70,85,.09); transform:rotate(35deg); content:""; }.skin img { position:relative; z-index:1; display:block; width:100%; height:142px; object-fit:contain; }.skin-name { position:relative; z-index:1; margin-top:8px; font-size:14px; font-weight:800; line-height:1.35; }.price { position:relative; z-index:1; display:flex; gap:5px; align-items:center; margin-top:7px; color:var(--aqua); font-size:13px; font-weight:800; }.vp { width:10px; height:10px; background:var(--aqua); clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%); }.discount { position:absolute; z-index:2; top:10px; right:10px; padding:4px 6px; background:var(--red); color:#fff; font-size:11px; font-weight:800; }.night { margin-top:30px; }.night h2 { color:var(--aqua); font-size:22px; margin-bottom:15px; }
     .empty { grid-column:1/-1; padding:34px; border:1px dashed var(--line); color:var(--muted); text-align:center; }
     footer { display:flex; justify-content:space-between; gap:15px; padding:23px 0 32px; border-top:1px solid var(--line); color:var(--muted); font-size:11px; line-height:1.5; }.riot { max-width:570px; }
+    .login-modal { width:min(660px, calc(100% - 28px)); min-height:620px; padding:0; border:1px solid var(--line); color:var(--text); background:#101923; box-shadow:0 30px 100px rgba(0,0,0,.7); }.login-modal::backdrop { background:rgba(5,10,16,.78); backdrop-filter:blur(5px); }.login-bar { display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:64px; padding:14px 18px; border-bottom:1px solid var(--line); background:var(--panel); }.login-bar strong { font-size:14px; }.login-bar span { display:block; margin-top:3px; color:var(--muted); font-size:11px; }.close-login { width:32px; height:32px; border:1px solid var(--line); color:var(--text); background:transparent; font-size:20px; line-height:1; }.riot-frame { display:block; width:100%; height:550px; border:0; background:#fff; }.login-help { margin:0; padding:10px 18px 13px; color:var(--muted); background:var(--panel); font-size:11px; line-height:1.5; }
     @keyframes rise { from { opacity:0; transform:translateY(9px); } to { opacity:1; transform:none; } }
     @media (max-width:760px) { .shell { width:min(100% - 28px, 1120px); } header { padding-top:18px; } main { padding-top:30px; }.lookup { grid-template-columns:1fr; margin-top:32px; }.cards { grid-template-columns:repeat(2, 1fr); }.skin { min-height:214px; }.skin img { height:122px; } footer { flex-direction:column; } }
   </style>
@@ -64,7 +65,7 @@
           <p class="notice"><span>◇</span><span><strong>개인정보 안내.</strong> 입력값은 이 조회 요청에만 사용되며 브라우저에 저장하지 않습니다.</span></p>
         </div>
         <aside class="panel guide"><p class="section-kicker">HOW IT WORKS</p><h2>3단계로 간단하게</h2><div class="steps">
-          <div class="step"><span class="num">01</span><div><h3>라이엇 계정으로 로그인</h3><p>공식 로그인 페이지를 새 탭에서 엽니다. <a id="login-link" href="#">로그인 창 열기 ↗</a></p></div></div>
+          <div class="step"><span class="num">01</span><div><h3>라이엇 계정으로 로그인</h3><p>사이트 안에서 라이엇 공식 로그인 화면을 엽니다. <a id="login-link" href="#">로그인하기 ↗</a></p></div></div>
           <div class="step"><span class="num">02</span><div><h3>리디렉션된 주소 복사</h3><p>로그인 완료 후 주소창의 전체 URL을 복사합니다.</p></div></div>
           <div class="step"><span class="num">03</span><div><h3>붙여넣고 조회</h3><p>왼쪽 입력창에 붙여넣으면 오늘의 스킨 목록을 확인할 수 있습니다.</p></div></div>
         </div></aside>
@@ -78,10 +79,19 @@
     </main>
     <footer><span>V-SHOP · 개인 상점 조회 도구</span><span class="riot">VALORANT 및 Riot Games는 Riot Games, Inc.의 상표입니다. 이 프로젝트는 Riot Games와 제휴하거나 보증받지 않았습니다.</span></footer>
   </div>
+  <dialog id="login-dialog" class="login-modal" aria-labelledby="login-title">
+    <div class="login-bar"><div><strong id="login-title">라이엇 계정 로그인</strong><span>Riot Games 공식 인증 화면</span></div><button id="close-login" class="close-login" type="button" aria-label="로그인 창 닫기">×</button></div>
+    <iframe id="riot-frame" class="riot-frame" title="Riot Games 로그인" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    <p class="login-help">계정 정보는 Riot Games의 공식 로그인 화면에서만 입력됩니다. 로그인 후 리디렉션 URL을 복사해 상점 조회 입력란에 붙여넣어 주세요.</p>
+  </dialog>
   <script>
     const BACKEND_URL = "https://api-theta-eight-46.vercel.app/api/store";
     const input = document.getElementById("token-input"), status = document.getElementById("status"), submit = document.getElementById("submit-btn"), results = document.getElementById("results");
-    document.getElementById("login-link").addEventListener("click", (event) => { event.preventDefault(); const redirect = "https://playvalorant.com/opt_in"; const url = `https://auth.riotgames.com/authorize?client_id=play-valorant-web-prod&redirect_uri=${encodeURIComponent(redirect)}&response_type=token%20id_token&scope=openid%20account&nonce=${crypto.getRandomValues(new Uint32Array(1))[0]}`; window.open(url, "_blank", "noopener"); });
+    const loginDialog = document.getElementById("login-dialog"), riotFrame = document.getElementById("riot-frame");
+    function riotAuthUrl() { const redirect = "https://playvalorant.com/opt_in"; return `https://auth.riotgames.com/authorize?client_id=play-valorant-web-prod&redirect_uri=${encodeURIComponent(redirect)}&response_type=token%20id_token&scope=openid%20account&nonce=${crypto.getRandomValues(new Uint32Array(1))[0]}`; }
+    document.getElementById("login-link").addEventListener("click", (event) => { event.preventDefault(); riotFrame.src = riotAuthUrl(); loginDialog.showModal(); });
+    document.getElementById("close-login").addEventListener("click", () => { loginDialog.close(); riotFrame.removeAttribute("src"); });
+    loginDialog.addEventListener("close", () => riotFrame.removeAttribute("src"));
     document.getElementById("reset-btn").addEventListener("click", () => { input.value = ""; status.textContent = ""; status.className = "status"; results.classList.remove("show"); input.focus(); });
     submit.addEventListener("click", lookupStore); input.addEventListener("keydown", (event) => { if (event.key === "Enter") lookupStore(); });
     function tokenFrom(value) { const match = value.match(/[?#&]access_token=([^&]+)/); return match ? decodeURIComponent(match[1]) : value; }
